@@ -5,11 +5,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const cors_1 = __importDefault(require("cors"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const applicationRoutes_1 = __importDefault(require("./routes/applicationRoutes"));
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 5001;
-// 连接数据库
+const PORT = 5001;
+app.use((0, cors_1.default)({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // 添加 OPTIONS
+    allowedHeaders: [
+        "Origin",
+        "X-Requested-With",
+        "Content-Type",
+        "Accept",
+        "Authorization",
+    ],
+    credentials: true,
+}));
+// 添加预检请求处理
+app.options("*", (0, cors_1.default)());
 mongoose_1.default
     .connect("mongodb://localhost:27017/assessment")
     .then(() => {

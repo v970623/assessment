@@ -22,7 +22,6 @@ const applicationSchema = new mongoose_1.Schema({
 });
 // 添加中间件来验证状态更新
 applicationSchema.pre("save", function (next) {
-    console.log("Pre-save middleware:", this);
     next();
 });
 exports.default = (0, mongoose_1.model)("Application", applicationSchema);

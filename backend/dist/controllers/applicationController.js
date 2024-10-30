@@ -35,25 +35,19 @@ const submitApplication = (req, res) => __awaiter(void 0, void 0, void 0, functi
 exports.submitApplication = submitApplication;
 const updateApplicationStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { applicationId, status } = req.body;
-    // 验证 status 值是否有效
     const validStatuses = ["new", "pending", "accepted", "rejected"];
     if (!validStatuses.includes(status)) {
         res.status(400).json({ error: "无效的状态值" });
         return;
     }
     try {
-        console.log("Attempting to update application:", { applicationId, status });
         const application = yield applicationModel_1.default.findById(applicationId);
-        console.log("Found application:", application);
         if (!application) {
             res.status(404).json({ error: "未找到申请" });
             return;
         }
-        // 明确设置状态
         application.status = status;
-        console.log("Updated status, about to save:", application);
         const savedApplication = yield application.save();
-        console.log("Application saved:", savedApplication);
         res.json({
             message: "状态更新成功",
             application: {
@@ -63,7 +57,6 @@ const updateApplicationStatus = (req, res) => __awaiter(void 0, void 0, void 0, 
         });
     }
     catch (error) {
-        console.error("Error updating application:", error);
         res.status(400).json({ error: "更新失败" });
     }
 });
