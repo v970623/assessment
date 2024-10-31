@@ -8,6 +8,8 @@ import {
   CircularProgress,
   InputAdornment,
   styled,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -45,9 +47,16 @@ export const RegisterForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreedToTerms) {
+      setError(
+        "Please read and agree to the Terms of Service and Privacy Policy"
+      );
+      return;
+    }
     setError("");
     setLoading(true);
 
@@ -116,12 +125,54 @@ export const RegisterForm = () => {
         }}
       />
 
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={agreedToTerms}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setAgreedToTerms(e.target.checked)
+            }
+            color="primary"
+          />
+        }
+        label={
+          <Box sx={{ fontSize: "0.875rem" }}>
+            I have read and agree to the
+            <Link
+              to="/terms-of-service"
+              style={{
+                color: "#2196F3",
+                textDecoration: "none",
+                marginLeft: "4px",
+                marginRight: "4px",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Terms of Service
+            </Link>
+            and
+            <Link
+              to="/privacy-policy"
+              style={{
+                color: "#2196F3",
+                textDecoration: "none",
+                marginLeft: "4px",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Privacy Policy
+            </Link>
+          </Box>
+        }
+        sx={{ mt: 2 }}
+      />
+
       <StyledButton
         type="submit"
         fullWidth
         variant="contained"
         sx={{ mt: 3, mb: 2 }}
-        disabled={loading}
+        disabled={loading || !agreedToTerms}
       >
         {loading ? <CircularProgress size={24} /> : "Register"}
       </StyledButton>

@@ -1,10 +1,9 @@
 import React from "react";
-import { LoginForm } from "../components/LoginForm";
+import { ApplicationForm } from "../components/ApplicationForm";
 import { Container, Paper, Typography, Box, useTheme } from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link } from "react-router-dom";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 
-const LoginPage = () => {
+const ApplicationPage = () => {
   const theme = useTheme();
 
   return (
@@ -18,7 +17,7 @@ const LoginPage = () => {
         padding: 3,
       }}
     >
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="sm">
         <Paper
           elevation={6}
           sx={{
@@ -50,7 +49,7 @@ const LoginPage = () => {
                 mb: 1,
               }}
             >
-              <LockOutlinedIcon sx={{ color: "white" }} />
+              <DescriptionOutlinedIcon sx={{ color: "white" }} />
             </Box>
             <Typography
               component="h1"
@@ -60,43 +59,14 @@ const LoginPage = () => {
                 color: theme.palette.primary.main,
               }}
             >
-              Log in
+              提交申请
             </Typography>
           </Box>
-          <LoginForm />
-          <Box
-            sx={{
-              mt: 2,
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "center",
-              gap: 2,
-              fontSize: "0.875rem",
-            }}
-          >
-            <Link
-              to="/privacy-policy"
-              style={{
-                color: theme.palette.primary.main,
-                textDecoration: "none",
-              }}
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              to="/terms-of-service"
-              style={{
-                color: theme.palette.primary.main,
-                textDecoration: "none",
-              }}
-            >
-              Terms of Service
-            </Link>
-          </Box>
+          <ApplicationForm />
         </Paper>
       </Container>
     </Box>
   );
 };
 
-export default LoginPage;
+export default ApplicationPage;
