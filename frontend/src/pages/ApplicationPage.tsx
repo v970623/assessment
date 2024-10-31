@@ -1,71 +1,102 @@
 import React from "react";
 import { ApplicationForm } from "../components/ApplicationForm";
-import { Container, Paper, Typography, Box, useTheme } from "@mui/material";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import {
+  Container,
+  Paper,
+  Typography,
+  Box,
+  useTheme,
+  Grid,
+} from "@mui/material";
 
 const ApplicationPage = () => {
   const theme = useTheme();
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: "linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 3,
-      }}
-    >
-      <Container component="main" maxWidth="sm">
-        <Paper
-          elevation={6}
+    <Grid container sx={{ minHeight: "100vh" }}>
+      <Grid
+        item
+        xs={false}
+        sm={4}
+        md={6}
+        sx={{
+          background:
+            'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/background.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          display: { xs: "none", sm: "flex" },
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: 6,
+        }}
+      >
+        <Typography
+          variant="h3"
           sx={{
-            p: 4,
-            width: "100%",
-            borderRadius: 2,
-            backdropFilter: "blur(10px)",
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+            color: "white",
+            fontWeight: 700,
+            mb: 2,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              mb: 3,
-            }}
-          >
-            <Box
+          Submit Application
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            color: "rgba(255, 255, 255, 0.8)",
+            maxWidth: 480,
+            lineHeight: 1.6,
+          }}
+        >
+          Submit your application here. We'll review your submission and get
+          back to you as soon as possible. Make sure to provide all necessary
+          information.
+        </Typography>
+      </Grid>
+
+      <Grid
+        item
+        xs={12}
+        sm={8}
+        md={6}
+        sx={{
+          background: "#f5f5f5",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Container maxWidth="sm">
+          <Box sx={{ mb: 5, textAlign: "center" }}>
+            <Typography
+              variant="h4"
               sx={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                backgroundColor: theme.palette.primary.main,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                fontWeight: 700,
+                color: "#000000",
                 mb: 1,
               }}
             >
-              <DescriptionOutlinedIcon sx={{ color: "white" }} />
-            </Box>
-            <Typography
-              component="h1"
-              variant="h5"
-              sx={{
-                fontWeight: 600,
-                color: theme.palette.primary.main,
-              }}
-            >
-              提交申请
+              Application Form
+            </Typography>
+            <Typography variant="body1" sx={{ color: "text.secondary" }}>
+              Please fill in your application details below
             </Typography>
           </Box>
-          <ApplicationForm />
-        </Paper>
-      </Container>
-    </Box>
+
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              borderRadius: 3,
+              backgroundColor: "white",
+              boxShadow: "0 0 20px rgba(0, 0, 0, 0.05)",
+            }}
+          >
+            <ApplicationForm />
+          </Paper>
+        </Container>
+      </Grid>
+    </Grid>
   );
 };
 

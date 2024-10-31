@@ -9,32 +9,45 @@ import {
   styled,
 } from "@mui/material";
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: "8px",
+    transition: "all 0.3s ease",
     "& fieldset": {
-      borderRadius: "10px",
+      borderColor: "rgba(0, 0, 0, 0.1)",
     },
     "&:hover fieldset": {
-      borderColor: theme.palette.primary.main,
+      borderColor: "#666",
     },
     "&.Mui-focused fieldset": {
-      borderColor: theme.palette.primary.main,
+      borderColor: "#666",
     },
   },
-}));
+  "& .MuiInputLabel-root": {
+    color: "#666",
+    "&.Mui-focused": {
+      color: "#666",
+    },
+  },
+});
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: "10px",
+const StyledButton = styled(Button)({
+  borderRadius: "8px",
   padding: "12px",
   textTransform: "none",
   fontSize: "16px",
   fontWeight: 600,
-  background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-  boxShadow: "0 3px 5px 2px rgba(33, 203, 243, .3)",
+  backgroundColor: "#000000",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
   "&:hover": {
-    background: "linear-gradient(45deg, #2196F3 60%, #21CBF3 90%)",
+    backgroundColor: "#333333",
+    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.3)",
   },
-}));
+  "&:disabled": {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+});
 
 export const ApplicationForm = () => {
   const [content, setContent] = useState("");

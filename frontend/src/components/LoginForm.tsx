@@ -9,37 +9,82 @@ import {
   CircularProgress,
   InputAdornment,
   styled,
+  Typography,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: "8px",
+    transition: "all 0.3s ease",
     "& fieldset": {
-      borderRadius: "10px",
+      borderColor: "rgba(0, 0, 0, 0.1)",
     },
     "&:hover fieldset": {
-      borderColor: theme.palette.primary.main,
+      borderColor: "#666",
     },
     "&.Mui-focused fieldset": {
-      borderColor: theme.palette.primary.main,
+      borderColor: "#666",
+    },
+    "& input:-webkit-autofill": {
+      "-webkit-box-shadow": "0 0 0 30px white inset",
+      "-webkit-text-fill-color": "#333",
+    },
+    "&.Mui-focused": {
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+    },
+    "&:hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
     },
   },
-}));
+  "& .MuiInputBase-input": {
+    color: "#333",
+    "&::placeholder": {
+      color: "#666",
+      opacity: 1,
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "#666",
+    "&.Mui-focused": {
+      color: "#666",
+    },
+  },
+  "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+    color: "#666",
+  },
+});
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: "10px",
+const StyledButton = styled(Button)({
+  borderRadius: "8px",
   padding: "12px",
   textTransform: "none",
   fontSize: "16px",
   fontWeight: 600,
-  background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-  boxShadow: "0 3px 5px 2px rgba(33, 203, 243, .3)",
+  backgroundColor: "#000000",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
   "&:hover": {
-    background: "linear-gradient(45deg, #2196F3 60%, #21CBF3 90%)",
+    backgroundColor: "#333333",
+    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.3)",
   },
-}));
+  "&:disabled": {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+});
+const StyledLink = styled(Link)({
+  color: "#666666",
+  textDecoration: "none",
+  fontSize: "0.875rem",
+  fontWeight: 500,
+  transition: "all 0.3s ease",
+  "&:hover": {
+    color: "#333333",
+    textDecoration: "underline",
+  },
+});
 
 export const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -65,14 +110,25 @@ export const LoginForm = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+    <Box
+      component="form"
+      onSubmit={handleLogin}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+      }}
+    >
       {error && (
         <Alert
           severity="error"
           sx={{
-            mb: 2,
-            borderRadius: "10px",
-            backgroundColor: "rgba(253, 237, 237, 0.8)",
+            borderRadius: "8px",
+            backgroundColor: "rgba(220, 53, 69, 0.1)",
+            color: "#dc3545",
+            "& .MuiAlert-icon": {
+              color: "#dc3545",
+            },
           }}
         >
           {error}
@@ -80,7 +136,6 @@ export const LoginForm = () => {
       )}
 
       <StyledTextField
-        margin="normal"
         required
         fullWidth
         id="username"
@@ -93,14 +148,13 @@ export const LoginForm = () => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <PersonOutlineIcon color="primary" />
+              <PersonOutlineIcon />
             </InputAdornment>
           ),
         }}
       />
 
       <StyledTextField
-        margin="normal"
         required
         fullWidth
         name="password"
@@ -113,7 +167,7 @@ export const LoginForm = () => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <LockOutlinedIcon color="primary" />
+              <LockOutlinedIcon />
             </InputAdornment>
           ),
         }}
@@ -123,26 +177,19 @@ export const LoginForm = () => {
         type="submit"
         fullWidth
         variant="contained"
-        sx={{ mt: 3, mb: 2 }}
         disabled={loading}
+        sx={{ mt: 1 }}
       >
-        {loading ? <CircularProgress size={24} /> : "Log in"}
+        {loading ? (
+          <CircularProgress size={24} sx={{ color: "white" }} />
+        ) : (
+          "Log In"
+        )}
       </StyledButton>
-
-      <Box
-        sx={{
-          textAlign: "center",
-          "& a": {
-            color: "primary.main",
-            textDecoration: "none",
-            fontWeight: 500,
-            "&:hover": {
-              textDecoration: "underline",
-            },
-          },
-        }}
-      >
-        <Link to="/register">Don't have an account? Sign up now</Link>
+      <Box sx={{ textAlign: "center" }}>
+        <StyledLink to="/register">
+          Don't have an account? Sign up now
+        </StyledLink>
       </Box>
     </Box>
   );

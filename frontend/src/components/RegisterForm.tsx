@@ -15,32 +15,80 @@ import { Link } from "react-router-dom";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: "8px",
+    transition: "all 0.3s ease",
     "& fieldset": {
-      borderRadius: "10px",
+      borderColor: "rgba(0, 0, 0, 0.1)",
     },
     "&:hover fieldset": {
-      borderColor: theme.palette.primary.main,
+      borderColor: "#666",
     },
     "&.Mui-focused fieldset": {
-      borderColor: theme.palette.primary.main,
+      borderColor: "#666",
+    },
+    "& input:-webkit-autofill": {
+      "-webkit-box-shadow": "0 0 0 30px white inset !important",
+      "-webkit-text-fill-color": "#333 !important",
+      "caret-color": "#333",
+    },
+    "& input:-webkit-autofill:hover": {
+      "-webkit-box-shadow": "0 0 0 30px white inset !important",
+    },
+    "& input:-webkit-autofill:focus": {
+      "-webkit-box-shadow": "0 0 0 30px white inset !important",
+    },
+    "&:hover, &.Mui-focused, &.Mui-filled": {
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
     },
   },
-}));
+  "& .MuiInputBase-input": {
+    color: "#333",
+    "&::placeholder": {
+      color: "#666",
+      opacity: 1,
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "#666",
+    "&.Mui-focused": {
+      color: "#666",
+    },
+  },
+  "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+    color: "#666",
+  },
+});
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: "10px",
+const StyledButton = styled(Button)({
+  borderRadius: "8px",
   padding: "12px",
   textTransform: "none",
   fontSize: "16px",
   fontWeight: 600,
-  background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-  boxShadow: "0 3px 5px 2px rgba(33, 203, 243, .3)",
+  backgroundColor: "#000000",
+  color: "#ffffff",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
   "&:hover": {
-    background: "linear-gradient(45deg, #2196F3 60%, #21CBF3 90%)",
+    backgroundColor: "#333333",
+    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.3)",
   },
-}));
+  "&:disabled": {
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+});
+
+const StyledTermsLink = styled(Link)({
+  color: "#666",
+  textDecoration: "none",
+  transition: "color 0.3s ease",
+  "&:hover": {
+    color: "#333",
+    textDecoration: "underline",
+  },
+});
 
 export const RegisterForm = () => {
   const [username, setUsername] = useState("");
@@ -99,7 +147,7 @@ export const RegisterForm = () => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <PersonOutlineIcon color="primary" />
+              <PersonOutlineIcon />
             </InputAdornment>
           ),
         }}
@@ -119,7 +167,7 @@ export const RegisterForm = () => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <LockOutlinedIcon color="primary" />
+              <LockOutlinedIcon />
             </InputAdornment>
           ),
         }}
@@ -129,39 +177,38 @@ export const RegisterForm = () => {
         control={
           <Checkbox
             checked={agreedToTerms}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAgreedToTerms(e.target.checked)
-            }
-            color="primary"
+            onChange={(e) => setAgreedToTerms(e.target.checked)}
+            sx={{
+              color: "#666",
+              "&.Mui-checked": {
+                color: "#666",
+              },
+            }}
           />
         }
         label={
-          <Box sx={{ fontSize: "0.875rem" }}>
+          <Box sx={{ fontSize: "0.875rem", color: "#666" }}>
             I have read and agree to the
-            <Link
+            <StyledTermsLink
               to="/terms-of-service"
               style={{
-                color: "#2196F3",
-                textDecoration: "none",
                 marginLeft: "4px",
                 marginRight: "4px",
               }}
               onClick={(e) => e.stopPropagation()}
             >
               Terms of Service
-            </Link>
+            </StyledTermsLink>
             and
-            <Link
+            <StyledTermsLink
               to="/privacy-policy"
               style={{
-                color: "#2196F3",
-                textDecoration: "none",
                 marginLeft: "4px",
               }}
               onClick={(e) => e.stopPropagation()}
             >
               Privacy Policy
-            </Link>
+            </StyledTermsLink>
           </Box>
         }
         sx={{ mt: 2 }}
@@ -177,20 +224,10 @@ export const RegisterForm = () => {
         {loading ? <CircularProgress size={24} /> : "Register"}
       </StyledButton>
 
-      <Box
-        sx={{
-          textAlign: "center",
-          "& a": {
-            color: "primary.main",
-            textDecoration: "none",
-            fontWeight: 500,
-            "&:hover": {
-              textDecoration: "underline",
-            },
-          },
-        }}
-      >
-        <Link to="/login">Already have an account? Login now</Link>
+      <Box sx={{ textAlign: "center" }}>
+        <StyledTermsLink to="/login" sx={{ fontSize: "0.875rem" }}>
+          Already have an account? Login now
+        </StyledTermsLink>
       </Box>
     </Box>
   );
