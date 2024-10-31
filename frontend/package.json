@@ -7,9 +7,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/css": "^11.13.4",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@mui/material": "^6.1.5",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
     "@types/mongoose": "^5.11.96",
     "axios": "^1.7.7",
     "cors": "^2.8.5",
