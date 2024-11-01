@@ -14,6 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 
 const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -93,6 +94,9 @@ const StyledTermsLink = styled(Link)({
 export const RegisterForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [isStaff, setIsStaff] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -109,7 +113,7 @@ export const RegisterForm = () => {
     setLoading(true);
 
     try {
-      await registerUser(username, password);
+      await registerUser(username, email, password, code);
       window.location.href = "/login";
     } catch (error) {
       setError("Registration failed, please try again later");
@@ -157,6 +161,25 @@ export const RegisterForm = () => {
         margin="normal"
         required
         fullWidth
+        id="email"
+        label="Email"
+        name="email"
+        autoComplete="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <EmailOutlinedIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+
+      <StyledTextField
+        margin="normal"
+        required
+        fullWidth
         name="password"
         label="Password"
         type="password"
@@ -172,6 +195,41 @@ export const RegisterForm = () => {
           ),
         }}
       />
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={isStaff}
+            onChange={(e) => setIsStaff(e.target.checked)}
+            sx={{
+              color: "#666",
+              "&.Mui-checked": { color: "#666" },
+            }}
+          />
+        }
+        label="Register as Staff"
+        sx={{ mt: 2 }}
+      />
+
+      {isStaff && (
+        <StyledTextField
+          margin="normal"
+          fullWidth
+          name="code"
+          label="Staff Code"
+          type="password"
+          id="code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockOutlinedIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
 
       <FormControlLabel
         control={

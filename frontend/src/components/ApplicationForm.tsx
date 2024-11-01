@@ -9,6 +9,10 @@ import {
   styled,
 } from "@mui/material";
 
+interface ApplicationFormData {
+  content: string;
+}
+
 const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -50,10 +54,20 @@ const StyledButton = styled(Button)({
 });
 
 export const ApplicationForm = () => {
-  const [content, setContent] = useState("");
+  const [formData, setFormData] = useState<ApplicationFormData>({
+    content: "",
+  });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,11 +76,14 @@ export const ApplicationForm = () => {
     setLoading(true);
 
     try {
-      await submitApplication(content);
+      await submitApplication(formData.content);
       setSuccess(true);
-      setContent("");
+      // 重置表单
+      setFormData({
+        content: "",
+      });
     } catch (error) {
-      setError("Failed to submit application, please try again later");
+      setError("Failed to submit application. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -109,8 +126,9 @@ export const ApplicationForm = () => {
         id="content"
         label="Application Content"
         name="content"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        value={formData.content}
+        onChange={handleChange}
+        placeholder="Please enter your application details..."
       />
 
       <StyledButton

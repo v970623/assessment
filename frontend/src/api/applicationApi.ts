@@ -1,4 +1,15 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+
+interface Application {
+  _id: string;
+  content: string;
+  status: string;
+  userId: {
+    username: string;
+    email: string;
+  };
+  createdAt: string;
+}
 
 const API_URL = "http://localhost:5001/api/application";
 
@@ -21,4 +32,13 @@ export const updateApplicationStatus = async (
     { applicationId, status },
     { headers: { Authorization: `Bearer ${token}` } }
   );
+};
+
+export const getApplications = async (): Promise<
+  AxiosResponse<Application[]>
+> => {
+  const token = localStorage.getItem("token");
+  return axios.get<Application[]>(`${API_URL}/list`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 };

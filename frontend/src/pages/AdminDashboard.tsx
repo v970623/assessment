@@ -1,4 +1,3 @@
-import { LoginForm } from "../components/LoginForm";
 import {
   Container,
   Paper,
@@ -6,21 +5,10 @@ import {
   Box,
   useTheme,
   Grid,
-  styled,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import ApplicationList from "../components/ApplicationList";
 
-const StyledLink = styled(Link)({
-  color: "#666",
-  textDecoration: "none",
-  fontSize: "0.875rem",
-  transition: "color 0.3s ease",
-  "&:hover": {
-    color: "#333",
-  },
-});
-
-const LoginPage = () => {
+const AdminDashboard = () => {
   const theme = useTheme();
 
   return (
@@ -49,7 +37,7 @@ const LoginPage = () => {
             mb: 2,
           }}
         >
-          Welcome Back
+          Admin Console
         </Typography>
         <Typography
           variant="h6"
@@ -59,14 +47,12 @@ const LoginPage = () => {
             lineHeight: 1.6,
           }}
         >
-          Welcome to our Online Application Management System. Here you can
-          easily submit applications, track progress, and communicate with our
-          staff in real-time. We provide convenient file upload features to make
-          your application process smoother.
+          Welcome to the Application Management System admin console. Here you
+          can view and manage all user submissions, track application progress,
+          and process application reviews.
         </Typography>
       </Grid>
 
-      {/* 右侧登录表单区域 */}
       <Grid
         item
         xs={12}
@@ -79,8 +65,8 @@ const LoginPage = () => {
           justifyContent: "center",
         }}
       >
-        <Container maxWidth="sm">
-          <Box sx={{ mb: 5, textAlign: "center" }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 5 }}>
             <Typography
               variant="h4"
               sx={{
@@ -89,10 +75,10 @@ const LoginPage = () => {
                 mb: 1,
               }}
             >
-              Sign In
+              Applications List
             </Typography>
             <Typography variant="body1" sx={{ color: "text.secondary" }}>
-              Enter your credentials to continue
+              View and manage all applications
             </Typography>
           </Box>
 
@@ -105,25 +91,12 @@ const LoginPage = () => {
               boxShadow: "0 0 20px rgba(0, 0, 0, 0.05)",
             }}
           >
-            <LoginForm />
+            <ApplicationList />
           </Paper>
-
-          <Box
-            sx={{
-              mt: 3,
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "center",
-              gap: 3,
-            }}
-          >
-            <StyledLink to="/privacy-policy">Privacy Policy</StyledLink>
-            <StyledLink to="/terms-of-service">Terms of Service</StyledLink>
-          </Box>
         </Container>
       </Grid>
     </Grid>
   );
 };
 
-export default LoginPage;
+export default AdminDashboard;

@@ -7,7 +7,7 @@ export const submitApplication: AsyncRequestHandler = async (req, res) => {
   const { content } = req.body;
   try {
     if (!req.user) {
-      res.status(401).json({ error: "未授权" });
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
     const application = new Application({
@@ -15,9 +15,9 @@ export const submitApplication: AsyncRequestHandler = async (req, res) => {
       content,
     });
     await application.save();
-    res.status(201).json({ message: "申请提交成功" });
+    res.status(201).json({ message: "Application submitted successfully" });
   } catch (error) {
-    res.status(400).json({ error: "提交失败" });
+    res.status(400).json({ error: "Submission failed" });
   }
 };
 
@@ -29,7 +29,7 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
 
   const validStatuses = ["new", "pending", "accepted", "rejected"];
   if (!validStatuses.includes(status)) {
-    res.status(400).json({ error: "无效的状态值" });
+    res.status(400).json({ error: "Invalid status value" });
     return;
   }
 
@@ -37,7 +37,7 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
     const application = await Application.findById(applicationId);
 
     if (!application) {
-      res.status(404).json({ error: "未找到申请" });
+      res.status(404).json({ error: "Application not found" });
       return;
     }
 
@@ -45,13 +45,25 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
     const savedApplication = await application.save();
 
     res.json({
-      message: "状态更新成功",
+      message: "Status updated successfully",
       application: {
         id: savedApplication._id,
         status: savedApplication.status,
       },
     });
   } catch (error) {
-    res.status(400).json({ error: "更新失败" });
+    res.status(400).json({ error: "Update failed" });
+  }
+};
+
+export const getApplications: AsyncRequestHandler = async (req, res) => {
+  try {
+    const applications = await Application.find()
+      .populate("userId", "username email")
+      .sort({ createdAt: -1 });
+
+    res.json(applications);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve application list" });
   }
 };

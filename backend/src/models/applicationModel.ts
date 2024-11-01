@@ -2,8 +2,10 @@ import { Schema, model, Document } from "mongoose";
 
 export interface IApplication extends Document {
   userId: Schema.Types.ObjectId;
-  status: "new" | "pending" | "accepted" | "rejected";
+  title: string;
   content: string;
+  status: "new" | "pending" | "accepted" | "rejected";
+  createdAt: Date;
 }
 
 const applicationSchema = new Schema<IApplication>(
@@ -13,23 +15,29 @@ const applicationSchema = new Schema<IApplication>(
       ref: "User",
       required: true,
     },
-    status: {
+    title: {
       type: String,
-      enum: ["new", "pending", "accepted", "rejected"],
-      default: "new",
-      required: true, // 添加 required
+      required: true,
+      trim: true,
+      maxLength: 200,
     },
     content: {
       type: String,
       required: true,
+      trim: true,
+    },
+    status: {
+      type: String,
+      enum: ["new", "pending", "accepted", "rejected"],
+      default: "new",
+      required: true,
     },
   },
   {
-    timestamps: true, // 添加时间戳
+    timestamps: true,
   }
 );
 
-// 添加中间件来验证状态更新
 applicationSchema.pre("save", function (next) {
   next();
 });
