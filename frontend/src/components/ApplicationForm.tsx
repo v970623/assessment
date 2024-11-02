@@ -7,7 +7,11 @@ import {
   Alert,
   CircularProgress,
   styled,
+  Collapse,
+  IconButton,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface ApplicationFormData {
   title: string;
@@ -54,8 +58,13 @@ const StyledButton = styled(Button)({
   },
 });
 
-export const ApplicationForm = () => {
-  const [formData, setFormData] = useState<ApplicationFormData>({
+export const ApplicationForm = ({
+  onSubmitSuccess,
+}: {
+  onSubmitSuccess: () => void;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const [formData, setFormData] = useState({
     title: "",
     content: "",
   });
@@ -84,76 +93,80 @@ export const ApplicationForm = () => {
         title: "",
         content: "",
       });
-    } catch (error) {
-      setError("Failed to submit application. Please try again later.");
+      setExpanded(false);
+      onSubmitSuccess();
+    } catch (error: any) {
+      setError(
+        error.response?.data?.error ||
+          "Submission failed, please try again later"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-      {error && (
-        <Alert
-          severity="error"
-          sx={{
-            mb: 2,
-            borderRadius: "10px",
-            backgroundColor: "rgba(253, 237, 237, 0.8)",
-          }}
+    <Box>
+      {!expanded ? (
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() => setExpanded(true)}
+          variant="contained"
+          sx={{ mb: 2 }}
         >
+          New Application
+        </Button>
+      ) : (
+        <IconButton onClick={() => setExpanded(false)} sx={{ mb: 2 }}>
+          <CloseIcon />
+        </IconButton>
+      )}
+
+      <Collapse in={expanded}>
+        <form onSubmit={handleSubmit}>
+          <StyledTextField
+            label="Application Title"
+            required
+            fullWidth
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+          <StyledTextField
+            label="Application Content"
+            required
+            fullWidth
+            multiline
+            rows={4}
+            value={formData.content}
+            onChange={(e) =>
+              setFormData({ ...formData, content: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+          <StyledButton
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} /> : "Submit Application"}
+          </StyledButton>
+        </form>
+      </Collapse>
+
+      {error && (
+        <Alert severity="error" sx={{ mt: 2 }}>
           {error}
         </Alert>
       )}
-
       {success && (
-        <Alert
-          severity="success"
-          sx={{
-            mb: 2,
-            borderRadius: "10px",
-            backgroundColor: "rgba(237, 247, 237, 0.8)",
-          }}
-        >
+        <Alert severity="success" sx={{ mt: 2 }}>
           Application submitted successfully!
         </Alert>
       )}
-
-      <StyledTextField
-        margin="normal"
-        required
-        fullWidth
-        id="title"
-        label="Application Title"
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
-        placeholder="Please enter your application title..."
-      />
-
-      <StyledTextField
-        margin="normal"
-        required
-        fullWidth
-        multiline
-        rows={6}
-        id="content"
-        label="Application Content"
-        name="content"
-        value={formData.content}
-        onChange={handleChange}
-        placeholder="Please enter your application details..."
-      />
-
-      <StyledButton
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2 }}
-        disabled={loading}
-      >
-        {loading ? <CircularProgress size={24} /> : "Submit Application"}
-      </StyledButton>
     </Box>
   );
 };

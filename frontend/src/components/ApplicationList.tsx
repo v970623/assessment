@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import {
   Table,
   TableBody,
@@ -58,7 +58,7 @@ interface Props {
   userRole: "staff" | "public";
 }
 
-export const ApplicationList = ({ userRole }: Props) => {
+export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -69,15 +69,10 @@ export const ApplicationList = ({ userRole }: Props) => {
 
   console.log("ApplicationList received userRole:", userRole);
 
-  useEffect(() => {
-    fetchApplications();
-  }, []);
-
   const fetchApplications = async () => {
     try {
       const response = await getApplications();
       if (userRole === "public") {
-        // 普通用户只看到自己的申请
         const userId = jwtDecode<DecodedToken>(
           localStorage.getItem("token")!
         ).id;
@@ -85,7 +80,6 @@ export const ApplicationList = ({ userRole }: Props) => {
           response.data.filter((app) => app.userId._id === userId)
         );
       } else {
-        // 管理员看到所有申请
         setApplications(response.data);
       }
     } catch (error) {
@@ -122,12 +116,20 @@ export const ApplicationList = ({ userRole }: Props) => {
   const handleStatusUpdate = async (newStatus: string) => {
     try {
       await updateApplicationStatus(selectedId, newStatus);
-      await fetchApplications(); // Refresh list
+      await fetchApplications();
       handleStatusClose();
     } catch (error) {
       console.error("Failed to update status:", error);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    fetchApplications,
+  }));
+
+  useEffect(() => {
+    fetchApplications();
+  }, []);
 
   if (loading) {
     return (
@@ -217,4 +219,4 @@ export const ApplicationList = ({ userRole }: Props) => {
       />
     </Paper>
   );
-};
+});

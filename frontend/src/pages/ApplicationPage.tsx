@@ -1,7 +1,7 @@
 import { Container, Typography, Box, Paper } from "@mui/material";
 import { ApplicationForm } from "../components/ApplicationForm";
 import { ApplicationList } from "../components/ApplicationList";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +13,7 @@ interface DecodedToken {
 const ApplicationPage = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState<"staff" | "public">("public");
+  const listRef = useRef<{ fetchApplications: () => void } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,6 +29,10 @@ const ApplicationPage = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  const handleSubmitSuccess = () => {
+    listRef.current?.fetchApplications();
+  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -46,14 +51,14 @@ const ApplicationPage = () => {
             Submit Application
           </Typography>
           <Paper sx={{ p: 3, borderRadius: 2 }}>
-            <ApplicationForm />
+            <ApplicationForm onSubmitSuccess={handleSubmitSuccess} />
           </Paper>
           <Box sx={{ mt: 4 }}>
             <Typography variant="h5" component="h2" gutterBottom>
               Your Applications
             </Typography>
             <Paper sx={{ p: 3, borderRadius: 2 }}>
-              <ApplicationList userRole="public" />
+              <ApplicationList ref={listRef} userRole="public" />
             </Paper>
           </Box>
         </>
