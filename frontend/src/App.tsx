@@ -1,5 +1,5 @@
 import { AuthProvider } from "./context/AuthContext";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Box, CssBaseline } from "@mui/material";
 import Navbar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
@@ -7,11 +7,12 @@ import RegisterPage from "./pages/RegisterPage";
 import ApplicationPage from "./pages/ApplicationPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import { ApplicationListPage } from "./pages/ApplicationListPage";
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <Router>
         <CssBaseline />
         <Box
           sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
@@ -32,10 +33,11 @@ function App() {
               <Route path="/application" element={<ApplicationPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/applications" element={<ApplicationListPage />} />
             </Routes>
           </Box>
         </Box>
-      </BrowserRouter>
+      </Router>
     </AuthProvider>
   );
 }

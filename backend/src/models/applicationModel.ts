@@ -6,6 +6,7 @@ export interface IApplication extends Document {
   content: string;
   status: "new" | "pending" | "accepted" | "rejected";
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const applicationSchema = new Schema<IApplication>(

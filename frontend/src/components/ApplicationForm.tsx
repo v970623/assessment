@@ -78,7 +78,6 @@ export const ApplicationForm = () => {
     try {
       await submitApplication(formData.content);
       setSuccess(true);
-      // 重置表单
       setFormData({
         content: "",
       });

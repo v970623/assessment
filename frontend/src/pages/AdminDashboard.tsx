@@ -6,7 +6,7 @@ import {
   useTheme,
   Grid,
 } from "@mui/material";
-import ApplicationList from "../components/ApplicationList";
+import { ApplicationList } from "../components/ApplicationList";
 
 const AdminDashboard = () => {
   const theme = useTheme();
