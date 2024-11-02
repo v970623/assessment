@@ -75,7 +75,6 @@ export const searchApplications: AsyncRequestHandler = async (req, res) => {
   try {
     let query: any = {};
 
-    // 关键词搜索（标题、内容和用户名）
     if (keyword) {
       query.$or = [
         { title: { $regex: keyword, $options: "i" } },
@@ -83,12 +82,10 @@ export const searchApplications: AsyncRequestHandler = async (req, res) => {
       ];
     }
 
-    // 状态筛选
     if (status) {
       query.status = status;
     }
 
-    // 如果是普通用户，只能看到自己的申请
     if (req.user && req.user.role === "public") {
       query.userId = req.user.id;
     }
@@ -99,6 +96,6 @@ export const searchApplications: AsyncRequestHandler = async (req, res) => {
 
     res.json(applications);
   } catch (error) {
-    res.status(500).json({ error: "搜索失败" });
+    res.status(500).json({ error: "Search failed" });
   }
 };

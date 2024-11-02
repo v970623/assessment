@@ -123,7 +123,7 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
         setApplications(response.data);
       }
     } catch (error) {
-      setError("搜索失败");
+      setError("Search failed");
       console.error(error);
     } finally {
       setLoading(false);
