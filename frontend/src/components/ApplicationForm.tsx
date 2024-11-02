@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 
 interface ApplicationFormData {
+  title: string;
   content: string;
 }
 
@@ -55,6 +56,7 @@ const StyledButton = styled(Button)({
 
 export const ApplicationForm = () => {
   const [formData, setFormData] = useState<ApplicationFormData>({
+    title: "",
     content: "",
   });
   const [error, setError] = useState("");
@@ -76,9 +78,10 @@ export const ApplicationForm = () => {
     setLoading(true);
 
     try {
-      await submitApplication(formData.content);
+      await submitApplication(formData.title, formData.content);
       setSuccess(true);
       setFormData({
+        title: "",
         content: "",
       });
     } catch (error) {
@@ -115,6 +118,18 @@ export const ApplicationForm = () => {
           Application submitted successfully!
         </Alert>
       )}
+
+      <StyledTextField
+        margin="normal"
+        required
+        fullWidth
+        id="title"
+        label="Application Title"
+        name="title"
+        value={formData.title}
+        onChange={handleChange}
+        placeholder="Please enter your application title..."
+      />
 
       <StyledTextField
         margin="normal"

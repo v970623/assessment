@@ -4,7 +4,7 @@ import Application, { IApplication } from "../models/applicationModel";
 type AsyncRequestHandler = (req: Request, res: Response) => Promise<void>;
 
 export const submitApplication: AsyncRequestHandler = async (req, res) => {
-  const { content } = req.body;
+  const { content, title } = req.body;
   try {
     if (!req.user) {
       res.status(401).json({ error: "Unauthorized" });
@@ -12,6 +12,7 @@ export const submitApplication: AsyncRequestHandler = async (req, res) => {
     }
     const application = new Application({
       userId: req.user.id,
+      title,
       content,
     });
     await application.save();

@@ -15,6 +15,7 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  Alert,
 } from "@mui/material";
 import {
   getApplications,
@@ -22,16 +23,23 @@ import {
 } from "../api/applicationApi";
 import { format } from "date-fns";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { jwtDecode } from "jwt-decode";
 
-interface Application {
+export interface Application {
   _id: string;
-  content: string;
-  status: string;
   userId: {
+    _id: string;
     username: string;
     email: string;
   };
+  content: string;
+  status: string;
   createdAt: string;
+}
+
+export interface DecodedToken {
+  id: string;
+  role: "staff" | "public";
 }
 
 const getStatusColor = (
@@ -57,6 +65,7 @@ export const ApplicationList = ({ userRole }: Props) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedId, setSelectedId] = useState<string>("");
+  const [error, setError] = useState("");
 
   console.log("ApplicationList received userRole:", userRole);
 
@@ -67,9 +76,21 @@ export const ApplicationList = ({ userRole }: Props) => {
   const fetchApplications = async () => {
     try {
       const response = await getApplications();
-      setApplications(response.data);
+      if (userRole === "public") {
+        // 普通用户只看到自己的申请
+        const userId = jwtDecode<DecodedToken>(
+          localStorage.getItem("token")!
+        ).id;
+        setApplications(
+          response.data.filter((app) => app.userId._id === userId)
+        );
+      } else {
+        // 管理员看到所有申请
+        setApplications(response.data);
+      }
     } catch (error) {
-      console.error("Failed to fetch applications:", error);
+      setError("Failed to fetch applications");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -118,6 +139,11 @@ export const ApplicationList = ({ userRole }: Props) => {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", borderRadius: 2 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <Table stickyHeader>
         <TableHead>
           <TableRow>

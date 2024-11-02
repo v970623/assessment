@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../api/authApi";
 import { AuthContext } from "../context/AuthContext";
 import {
@@ -92,6 +93,7 @@ export const LoginForm = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,11 +102,12 @@ export const LoginForm = () => {
 
     try {
       const response = await loginUser(username, password);
-      console.log("Login response:", response.data);
       localStorage.setItem("token", response.data.token);
+      console.log("Token saved:", response.data.token);
       authContext?.login();
-      window.location.href = "/dashboard";
+      navigate("/application");
     } catch (error) {
+      console.error("Login error:", error);
       setError("Login failed, please check your username and password");
     } finally {
       setLoading(false);

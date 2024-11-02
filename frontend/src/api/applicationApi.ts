@@ -1,23 +1,13 @@
 import axios, { AxiosResponse } from "axios";
-
-interface Application {
-  _id: string;
-  content: string;
-  status: string;
-  userId: {
-    username: string;
-    email: string;
-  };
-  createdAt: string;
-}
+import { Application } from "../components/ApplicationList";
 
 const API_URL = "http://localhost:5001/api/application";
 
-export const submitApplication = async (content: string) => {
+export const submitApplication = async (title: string, content: string) => {
   const token = localStorage.getItem("token");
   return axios.post(
     `${API_URL}/submit`,
-    { content },
+    { title, content },
     { headers: { Authorization: `Bearer ${token}` } }
   );
 };
