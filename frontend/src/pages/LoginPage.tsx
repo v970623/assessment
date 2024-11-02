@@ -66,7 +66,6 @@ const LoginPage = () => {
         </Typography>
       </Grid>
 
-      {/* 右侧登录表单区域 */}
       <Grid
         item
         xs={12}

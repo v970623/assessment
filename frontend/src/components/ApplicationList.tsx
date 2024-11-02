@@ -118,7 +118,6 @@ export const ApplicationList = ({ userRole }: Props) => {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", borderRadius: 2 }}>
-      {console.log("Rendering table with userRole:", userRole)}
       <Table stickyHeader>
         <TableHead>
           <TableRow>
