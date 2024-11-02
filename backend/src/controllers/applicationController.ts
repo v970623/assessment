@@ -68,3 +68,37 @@ export const getApplications: AsyncRequestHandler = async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve application list" });
   }
 };
+
+export const searchApplications: AsyncRequestHandler = async (req, res) => {
+  const { keyword, status } = req.query;
+
+  try {
+    let query: any = {};
+
+    // 关键词搜索（标题、内容和用户名）
+    if (keyword) {
+      query.$or = [
+        { title: { $regex: keyword, $options: "i" } },
+        { content: { $regex: keyword, $options: "i" } },
+      ];
+    }
+
+    // 状态筛选
+    if (status) {
+      query.status = status;
+    }
+
+    // 如果是普通用户，只能看到自己的申请
+    if (req.user && req.user.role === "public") {
+      query.userId = req.user.id;
+    }
+
+    const applications = await Application.find(query)
+      .populate("userId", "username email")
+      .sort({ createdAt: -1 });
+
+    res.json(applications);
+  } catch (error) {
+    res.status(500).json({ error: "搜索失败" });
+  }
+};
