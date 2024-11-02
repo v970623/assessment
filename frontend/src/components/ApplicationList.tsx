@@ -11,9 +11,17 @@ import {
   Chip,
   Typography,
   Paper,
+  Button,
+  Menu,
+  MenuItem,
+  IconButton,
 } from "@mui/material";
-import { getApplications } from "../api/applicationApi";
+import {
+  getApplications,
+  updateApplicationStatus,
+} from "../api/applicationApi";
 import { format } from "date-fns";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 interface Application {
   _id: string;
@@ -38,11 +46,19 @@ const getStatusColor = (
   return colors[status as keyof typeof colors] || "default";
 };
 
-export const ApplicationList = () => {
+interface Props {
+  userRole: "staff" | "public";
+}
+
+export const ApplicationList = ({ userRole }: Props) => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedId, setSelectedId] = useState<string>("");
+
+  console.log("ApplicationList received userRole:", userRole);
 
   useEffect(() => {
     fetchApplications();
@@ -70,6 +86,28 @@ export const ApplicationList = () => {
     setPage(0);
   };
 
+  const handleStatusClick = (
+    event: React.MouseEvent<HTMLElement>,
+    id: string
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedId(id);
+  };
+
+  const handleStatusClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleStatusUpdate = async (newStatus: string) => {
+    try {
+      await updateApplicationStatus(selectedId, newStatus);
+      await fetchApplications(); // Refresh list
+      handleStatusClose();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
@@ -80,6 +118,7 @@ export const ApplicationList = () => {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", borderRadius: 2 }}>
+      {console.log("Rendering table with userRole:", userRole)}
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -87,17 +126,11 @@ export const ApplicationList = () => {
             <TableCell>Content</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Submit Time</TableCell>
+            {userRole === "staff" && <TableCell>Actions</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
           {applications
-            // 例如:
-            // page = 0, rowsPerPage = 10
-            // .slice(0, 10) - 返回前10条记录
-            // page = 1, rowsPerPage = 10
-            // .slice(10, 20) - 返回第11-20条记录
-            // page = 2, rowsPerPage = 10
-            // .slice(20, 30) - 返回第21-30条记录
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((application) => (
               <TableRow key={application._id}>
@@ -117,10 +150,37 @@ export const ApplicationList = () => {
                 <TableCell>
                   {format(new Date(application.createdAt), "yyyy-MM-dd HH:mm")}
                 </TableCell>
+                {userRole === "staff" && (
+                  <TableCell align="center">
+                    <IconButton
+                      onClick={(e) => handleStatusClick(e, application._id)}
+                      size="small"
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
         </TableBody>
       </Table>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleStatusClose}
+      >
+        <MenuItem onClick={() => handleStatusUpdate("pending")}>
+          Pending
+        </MenuItem>
+        <MenuItem onClick={() => handleStatusUpdate("accepted")}>
+          Accepted
+        </MenuItem>
+        <MenuItem onClick={() => handleStatusUpdate("rejected")}>
+          Rejected
+        </MenuItem>
+      </Menu>
+
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"

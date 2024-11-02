@@ -36,9 +36,22 @@ export const login: AsyncRequestHandler = async (req, res) => {
       res.status(401).json({ error: "Invalid credentials" });
       return;
     }
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token });
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        role: user.role,
+      },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({
+      token,
+      role: user.role,
+    });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(400).json({ error: "Login failed" });
   }
 };

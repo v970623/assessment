@@ -91,7 +91,7 @@ const AdminDashboard = () => {
               boxShadow: "0 0 20px rgba(0, 0, 0, 0.05)",
             }}
           >
-            <ApplicationList />
+            <ApplicationList userRole="staff" />
           </Paper>
         </Container>
       </Grid>

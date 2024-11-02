@@ -99,7 +99,9 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      await loginUser(username, password);
+      const response = await loginUser(username, password);
+      console.log("Login response:", response.data);
+      localStorage.setItem("token", response.data.token);
       authContext?.login();
       window.location.href = "/dashboard";
     } catch (error) {
