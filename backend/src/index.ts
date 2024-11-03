@@ -5,6 +5,10 @@ import authRoutes from "./routes/authRoutes";
 import applicationRoutes from "./routes/applicationRoutes";
 import path from "path";
 import fs from "fs";
+import passport from "passport";
+import configurePassport from "./config/passport";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 const PORT = 5001;
@@ -25,6 +29,10 @@ app.use(
 );
 
 app.options("*", cors());
+
+// 初始化 Passport
+app.use(passport.initialize());
+configurePassport();
 
 mongoose
   .connect("mongodb://localhost:27017/assessment")

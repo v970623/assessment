@@ -52,9 +52,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const decoded = jwtDecode<DecodedToken>(token);
         setUserRole(decoded.role);
         setIsAuthenticated(true);
-        console.log("Login successful");
+        console.log("Login successful, decoded token:", decoded);
       } catch (error) {
         console.error("Login failed:", error);
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        setUserRole(null);
       }
     }
   };

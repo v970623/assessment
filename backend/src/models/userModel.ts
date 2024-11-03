@@ -3,7 +3,8 @@ import bcrypt from "bcrypt";
 
 export interface IUser extends Document {
   username: string;
-  password: string;
+  password?: string;
+  googleId?: string;
   email: string;
   role: "staff" | "public";
   comparePassword(password: string): Promise<boolean>;
@@ -11,8 +12,9 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String },
   email: { type: String, required: true, unique: true },
+  googleId: { type: String },
   role: {
     type: String,
     enum: ["staff", "public"],
@@ -26,8 +28,9 @@ userSchema.methods.comparePassword = function (password: string) {
 };
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+  if (this.password && this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
   next();
 });
 

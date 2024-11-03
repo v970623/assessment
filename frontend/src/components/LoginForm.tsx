@@ -15,6 +15,7 @@ import {
 import { Link } from "react-router-dom";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import GoogleIcon from "@mui/icons-material/Google";
 
 const StyledTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -101,7 +102,7 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await loginUser(username, password);
+      const response = await loginUser(username, password || undefined);
       localStorage.setItem("token", response.data.token);
       console.log("Token saved:", response.data.token);
       authContext?.login();
@@ -112,6 +113,10 @@ export const LoginForm = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:5001/api/auth/google";
   };
 
   return (
@@ -160,7 +165,6 @@ export const LoginForm = () => {
       />
 
       <StyledTextField
-        required
         fullWidth
         name="password"
         label="Password"
@@ -191,6 +195,18 @@ export const LoginForm = () => {
           "Log In"
         )}
       </StyledButton>
+
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={handleGoogleLogin}
+        startIcon={<GoogleIcon />}
+        sx={{ mt: 2 }}
+      >
+        Use Google account to login
+      </Button>
+
       <Box sx={{ textAlign: "center" }}>
         <StyledLink to="/register">
           Don't have an account? Sign up now
