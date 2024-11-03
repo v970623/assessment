@@ -10,7 +10,7 @@ export const authenticate = (
 ): void => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
-    res.status(401).json({ error: "拒绝访问" });
+    res.status(401).json({ error: "Access denied" });
     return;
   }
 
@@ -19,6 +19,6 @@ export const authenticate = (
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ error: "无效的令牌" });
+    res.status(401).json({ error: "Invalid token" });
   }
 };

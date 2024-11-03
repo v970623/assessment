@@ -94,7 +94,7 @@ export const ApplicationForm = ({
       const newFile = event.target.files[0];
 
       const isValidType = newFile.type.startsWith("image/");
-      const isValidSize = newFile.size <= 30 * 1024 * 1024; // 30MB
+      const isValidSize = newFile.size <= 30 * 1024 * 1024;
 
       if (!isValidType || !isValidSize) {
         setError("Only 30MB image files are allowed");
@@ -121,11 +121,10 @@ export const ApplicationForm = ({
       );
 
       if (!submitResponse.data?.applicationId) {
-        throw new Error("未获取到申请ID");
+        throw new Error("Failed to get application ID");
       }
 
       const ApplicationId = submitResponse.data.applicationId;
-      console.log("获取到的申请ID:", ApplicationId);
 
       if (files.length > 0) {
         try {
