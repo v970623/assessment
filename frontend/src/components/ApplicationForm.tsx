@@ -115,15 +115,21 @@ export const ApplicationForm = ({
     setLoading(true);
 
     try {
-      const response = await submitApplication(
+      const submitResponse = await submitApplication(
         formData.title,
         formData.content
       );
-      const { applicationId } = response.data;
+
+      if (!submitResponse.data?.applicationId) {
+        throw new Error("未获取到申请ID");
+      }
+
+      const ApplicationId = submitResponse.data.applicationId;
+      console.log("获取到的申请ID:", ApplicationId);
 
       if (files.length > 0) {
         try {
-          await uploadAttachment(applicationId, files[0]);
+          await uploadAttachment(ApplicationId, files[0]);
         } catch (error) {
           console.error("File upload failed:", error);
           setError("File upload failed");

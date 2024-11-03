@@ -47,14 +47,26 @@ export const searchApplications = async (
 };
 
 export const uploadAttachment = async (applicationId: string, file: File) => {
-  const token = localStorage.getItem("token");
-  const formData = new FormData();
-  formData.append("file", file);
+  try {
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
 
-  return axios.post(`${API_URL}/${applicationId}/upload`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    formData.append("applicationId", applicationId);
+    formData.append("file", file);
+
+    const response = await axios.post(
+      `${API_URL}/${applicationId}/upload`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch (error: any) {
+    console.error("Upload error:", error.response?.data || error.message);
+    throw error;
+  }
 };

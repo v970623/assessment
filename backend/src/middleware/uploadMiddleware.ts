@@ -16,14 +16,12 @@ const storage = multer.diskStorage({
     cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
   },
 });
-
 const fileFilter = (req: any, file: any, cb: any) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only JPG/PNG/GIF image files are allowed!"), false);
+  if (!req.params.applicationId) {
+    cb(new Error("Missing applicationId"));
+    return;
   }
+  cb(null, true);
 };
 
 export const upload = multer({

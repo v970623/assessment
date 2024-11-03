@@ -2,25 +2,43 @@ import { Request, Response } from "express";
 import Application, { IApplication } from "../models/applicationModel";
 import fs from "fs";
 import path from "path";
+import { sendEmailNotification } from "../services/emailService";
 
 type AsyncRequestHandler = (req: Request, res: Response) => Promise<void>;
 
-export const submitApplication: AsyncRequestHandler = async (req, res) => {
-  const { content, title } = req.body;
+export const submitApplication = async (req: Request, res: Response) => {
   try {
     if (!req.user) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
+
+    const { title, content } = req.body;
+
     const application = new Application({
       userId: req.user.id,
       title,
       content,
+      status: "new",
     });
-    await application.save();
-    res.status(201).json({ message: "Application submitted successfully" });
+
+    const savedApplication = await application.save();
+
+    // 发送邮件给管理员
+    await sendEmailNotification(
+      process.env.ADMIN_EMAIL || "",
+      "new_application",
+      savedApplication
+    );
+
+    res.status(201).json({
+      message: "Application submitted successfully",
+      applicationId: savedApplication._id,
+      application: savedApplication,
+    });
   } catch (error) {
-    res.status(400).json({ error: "Submission failed" });
+    console.error("Submission failed:", error);
+    res.status(500).json({ error: "Submission failed" });
   }
 };
 
@@ -37,7 +55,10 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
   }
 
   try {
-    const application = await Application.findById(applicationId);
+    const application = await Application.findById(applicationId).populate(
+      "userId",
+      "email"
+    );
 
     if (!application) {
       res.status(404).json({ error: "Application not found" });
@@ -46,6 +67,15 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
 
     application.status = status as IApplication["status"];
     const savedApplication = await application.save();
+
+    // 发送状态更新邮件给申请人
+    if (application.userId && (application.userId as any).email) {
+      await sendEmailNotification(
+        (application.userId as any).email,
+        "status_update",
+        application
+      );
+    }
 
     res.json({
       message: "Status updated successfully",
@@ -105,7 +135,7 @@ export const searchApplications: AsyncRequestHandler = async (req, res) => {
 export const uploadAttachment = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "没有上传文件" });
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
     const { applicationId } = req.params;
@@ -113,7 +143,7 @@ export const uploadAttachment = async (req: Request, res: Response) => {
 
     if (!application) {
       fs.unlinkSync(req.file.path);
-      return res.status(404).json({ error: "申请不存在" });
+      return res.status(404).json({ error: "Application not found" });
     }
 
     if (
@@ -121,7 +151,7 @@ export const uploadAttachment = async (req: Request, res: Response) => {
       application.userId.toString() !== req.user?.id
     ) {
       fs.unlinkSync(req.file.path);
-      return res.status(403).json({ error: "无权上传文件" });
+      return res.status(403).json({ error: "Unauthorized to upload file" });
     }
 
     const filePath = `/uploads/${path.basename(req.file.path)}`;
@@ -130,14 +160,14 @@ export const uploadAttachment = async (req: Request, res: Response) => {
     await application.save();
 
     res.json({
-      message: "文件上传成功",
+      message: "File uploaded successfully",
       filePath,
     });
   } catch (error) {
-    console.error("文件上传错误:", error);
+    console.error("File upload error:", error);
     if (req.file) {
       fs.unlinkSync(req.file.path);
     }
-    res.status(500).json({ error: "文件上传失败" });
+    res.status(500).json({ error: "File upload failed" });
   }
 };
