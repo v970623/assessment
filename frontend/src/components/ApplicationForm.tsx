@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { submitApplication } from "../api/applicationApi";
+import React, { useState, useRef, ChangeEvent } from "react";
+import { submitApplication, uploadAttachment } from "../api/applicationApi";
 import {
   TextField,
   Button,
@@ -9,9 +9,15 @@ import {
   styled,
   Collapse,
   IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface ApplicationFormData {
   title: string;
@@ -71,6 +77,9 @@ export const ApplicationForm = ({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -80,26 +89,54 @@ export const ApplicationForm = ({
     }));
   };
 
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const newFile = event.target.files[0];
+
+      const isValidType = newFile.type.startsWith("image/");
+      const isValidSize = newFile.size <= 30 * 1024 * 1024; // 30MB
+
+      if (!isValidType || !isValidSize) {
+        setError("Only 30MB image files are allowed");
+        return;
+      }
+
+      setFiles([newFile]);
+    }
+  };
+
+  const handleFileDelete = () => {
+    setFiles([]);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess(false);
     setLoading(true);
 
     try {
-      await submitApplication(formData.title, formData.content);
-      setSuccess(true);
-      setFormData({
-        title: "",
-        content: "",
-      });
-      setExpanded(false);
-      onSubmitSuccess();
-    } catch (error: any) {
-      setError(
-        error.response?.data?.error ||
-          "Submission failed, please try again later"
+      const response = await submitApplication(
+        formData.title,
+        formData.content
       );
+      const { applicationId } = response.data;
+
+      if (files.length > 0) {
+        try {
+          await uploadAttachment(applicationId, files[0]);
+        } catch (error) {
+          console.error("File upload failed:", error);
+          setError("File upload failed");
+        }
+      }
+
+      setSuccess(true);
+      setFormData({ title: "", content: "" });
+      setFiles([]);
+      onSubmitSuccess();
+    } catch (error) {
+      setError("Submission failed, please try again later");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -146,13 +183,59 @@ export const ApplicationForm = ({
             }
             sx={{ mb: 2 }}
           />
+
+          <Box sx={{ mt: 2, mb: 2 }}>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              style={{ display: "none" }}
+              ref={fileInputRef}
+            />
+            <Button
+              variant="outlined"
+              startIcon={<AttachFileIcon />}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading || uploading}
+            >
+              Add Image
+            </Button>
+          </Box>
+
+          {files.length > 0 && (
+            <List>
+              {files.map((file, index) => (
+                <ListItem key={index}>
+                  <ListItemText
+                    primary={file.name}
+                    secondary={`${(file.size / 1024).toFixed(2)} KB`}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      edge="end"
+                      onClick={handleFileDelete}
+                      disabled={loading || uploading}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          )}
+
           <StyledButton
             type="submit"
             variant="contained"
             fullWidth
-            disabled={loading}
+            disabled={loading || uploading}
           >
-            {loading ? <CircularProgress size={24} /> : "Submit Application"}
+            {loading || uploading ? (
+              <CircularProgress size={24} />
+            ) : (
+              "Submit Application"
+            )}
           </StyledButton>
         </form>
       </Collapse>

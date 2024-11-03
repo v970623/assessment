@@ -1,6 +1,8 @@
 export interface SearchParams {
   keyword?: string;
   status?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface Application {
@@ -14,6 +16,10 @@ export interface Application {
   content: string;
   status: string;
   createdAt: string;
+  attachments?: {
+    fileUrl?: string;
+    fileName?: string;
+  }[];
 }
 
 export interface DecodedToken {

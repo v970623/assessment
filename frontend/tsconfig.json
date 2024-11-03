@@ -17,7 +17,12 @@
       "@components/*": ["./src/components/*"],
       "@pages/*": ["./src/pages/*"],
       "@api/*": ["./src/api/*"]
-    }
+    },
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "removeComments": false,
+    "declaration": true,
+    "declarationMap": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

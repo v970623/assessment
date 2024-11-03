@@ -5,6 +5,7 @@ export interface IApplication extends Document {
   title: string;
   content: string;
   status: "new" | "pending" | "accepted" | "rejected";
+  attachments: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,14 +34,22 @@ const applicationSchema = new Schema<IApplication>(
       default: "new",
       required: true,
     },
+    attachments: [
+      {
+        type: String,
+        required: false,
+        validate: {
+          validator: function (v: string) {
+            return /\.(jpg|jpeg|png|gif)$/i.test(v);
+          },
+          message: "Attachments must be image files (JPG/JPEG/PNG/GIF)",
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
-
-applicationSchema.pre("save", function (next) {
-  next();
-});
 
 export default model<IApplication>("Application", applicationSchema);

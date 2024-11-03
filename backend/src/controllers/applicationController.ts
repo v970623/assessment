@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Application, { IApplication } from "../models/applicationModel";
+import fs from "fs";
+import path from "path";
 
 type AsyncRequestHandler = (req: Request, res: Response) => Promise<void>;
 
@@ -97,5 +99,45 @@ export const searchApplications: AsyncRequestHandler = async (req, res) => {
     res.json(applications);
   } catch (error) {
     res.status(500).json({ error: "Search failed" });
+  }
+};
+
+export const uploadAttachment = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "没有上传文件" });
+    }
+
+    const { applicationId } = req.params;
+    const application = await Application.findById(applicationId);
+
+    if (!application) {
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ error: "申请不存在" });
+    }
+
+    if (
+      req.user?.role !== "staff" &&
+      application.userId.toString() !== req.user?.id
+    ) {
+      fs.unlinkSync(req.file.path);
+      return res.status(403).json({ error: "无权上传文件" });
+    }
+
+    const filePath = `/uploads/${path.basename(req.file.path)}`;
+    application.attachments = application.attachments || [];
+    application.attachments.push(filePath);
+    await application.save();
+
+    res.json({
+      message: "文件上传成功",
+      filePath,
+    });
+  } catch (error) {
+    console.error("文件上传错误:", error);
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ error: "文件上传失败" });
   }
 };

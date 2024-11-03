@@ -11,7 +11,6 @@ import {
   Chip,
   Typography,
   Paper,
-  Button,
   Menu,
   MenuItem,
   IconButton,
@@ -25,7 +24,7 @@ import {
 import { format } from "date-fns";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { jwtDecode } from "jwt-decode";
-import { ApplicationSearch } from "./ApplicationSearch";
+import ApplicationSearch from "./ApplicationSearch";
 import { Application, DecodedToken, SearchParams } from "../types/application";
 
 const getStatusColor = (
