@@ -21,16 +21,16 @@ const configurePassport = () => {
         done: any
       ) => {
         try {
-          // 查找或创建用户
+          // Find or create user
           let user = await User.findOne({ googleId: profile.id });
 
           if (!user) {
-            // 如果用户不存在,创建新用户
+            // Create new user if not exists
             user = await User.create({
               googleId: profile.id,
               email: profile.emails?.[0].value,
               username: profile.displayName,
-              role: "public", // 默认角色
+              role: "public", // Default role
             });
           }
 

@@ -67,11 +67,15 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
     const savedApplication = await application.save();
 
     if (application.userId && (application.userId as any).email) {
-      await sendEmailNotification("status_update", {
-        email: (application.userId as any).email,
-        title: savedApplication.title,
-        status: savedApplication.status,
-      });
+      try {
+        await sendEmailNotification("status_update", {
+          userId: application.userId,
+          title: savedApplication.title,
+          status: savedApplication.status,
+        });
+      } catch (emailError) {
+        console.error("Failed to send email notification:", emailError);
+      }
     }
 
     res.json({
@@ -82,6 +86,7 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
       },
     });
   } catch (error) {
+    console.error("Update failed:", error);
     res.status(400).json({ error: "Update failed" });
   }
 };
