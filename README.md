@@ -42,7 +42,7 @@ PORT=5000
 NODE_ENV=development
 
 # MongoDB
-MONGODB_URI=mongodb://localhost:27017/movie-hall-app
+MONGODB_URI=mongodb://localhost:27017/assessment
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_key

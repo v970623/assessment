@@ -46,6 +46,7 @@ interface Props {
 export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusLoading, setStatusLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -98,12 +99,15 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
   };
 
   const handleStatusUpdate = async (newStatus: string) => {
+    setStatusLoading(true);
     try {
       await updateApplicationStatus(selectedId, newStatus);
       await fetchApplications();
       handleStatusClose();
     } catch (error) {
       console.error("Failed to update status:", error);
+    } finally {
+      setStatusLoading(false);
     }
   };
 
@@ -195,8 +199,13 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
                       <IconButton
                         onClick={(e) => handleStatusClick(e, application._id)}
                         size="small"
+                        disabled={statusLoading}
                       >
-                        <MoreVertIcon />
+                        {statusLoading ? (
+                          <CircularProgress size={20} />
+                        ) : (
+                          <MoreVertIcon />
+                        )}
                       </IconButton>
                     </TableCell>
                   )}
@@ -210,13 +219,22 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
           open={Boolean(anchorEl)}
           onClose={handleStatusClose}
         >
-          <MenuItem onClick={() => handleStatusUpdate("pending")}>
+          <MenuItem
+            onClick={() => handleStatusUpdate("pending")}
+            disabled={statusLoading}
+          >
             Pending
           </MenuItem>
-          <MenuItem onClick={() => handleStatusUpdate("accepted")}>
+          <MenuItem
+            onClick={() => handleStatusUpdate("accepted")}
+            disabled={statusLoading}
+          >
             Accepted
           </MenuItem>
-          <MenuItem onClick={() => handleStatusUpdate("rejected")}>
+          <MenuItem
+            onClick={() => handleStatusUpdate("rejected")}
+            disabled={statusLoading}
+          >
             Rejected
           </MenuItem>
         </Menu>
