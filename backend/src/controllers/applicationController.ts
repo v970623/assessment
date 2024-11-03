@@ -23,13 +23,11 @@ export const submitApplication = async (req: Request, res: Response) => {
     });
 
     const savedApplication = await application.save();
-
-    // 发送邮件给管理员
-    await sendEmailNotification(
-      process.env.ADMIN_EMAIL || "",
-      "new_application",
-      savedApplication
-    );
+    await sendEmailNotification("new_application", {
+      title: savedApplication.title,
+      content: savedApplication.content,
+      username: req.user.username,
+    });
 
     res.status(201).json({
       message: "Application submitted successfully",
@@ -68,13 +66,12 @@ export const updateApplicationStatus: AsyncRequestHandler = async (
     application.status = status as IApplication["status"];
     const savedApplication = await application.save();
 
-    // 发送状态更新邮件给申请人
     if (application.userId && (application.userId as any).email) {
-      await sendEmailNotification(
-        (application.userId as any).email,
-        "status_update",
-        application
-      );
+      await sendEmailNotification("status_update", {
+        email: (application.userId as any).email,
+        title: savedApplication.title,
+        status: savedApplication.status,
+      });
     }
 
     res.json({
