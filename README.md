@@ -63,7 +63,7 @@ SMTP_PASS=your_email_app_password
 **Frontend (.env)**:
 
 ```plaintext
-REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_API_URL=http://localhost:5001/api
 REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
