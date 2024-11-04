@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes";
 import applicationRoutes from "./routes/applicationRoutes";
+import messageRoutes from "./routes/messageRoutes";
 import path from "path";
 import fs from "fs";
 import passport from "passport";
@@ -47,6 +48,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/application", applicationRoutes);
+app.use("/api/message", messageRoutes);
 
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {

@@ -15,6 +15,7 @@ import {
   MenuItem,
   IconButton,
   Alert,
+  Button,
 } from "@mui/material";
 import {
   getApplications,
@@ -26,6 +27,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { jwtDecode } from "jwt-decode";
 import ApplicationSearch from "./ApplicationSearch";
 import { Application, DecodedToken, SearchParams } from "../types/application";
+import { MessageSection } from "./MessageSection";
 
 const getStatusColor = (
   status: string
@@ -52,6 +54,8 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedId, setSelectedId] = useState<string>("");
   const [error, setError] = useState("");
+  const [selectedApplication, setSelectedApplication] =
+    useState<Application | null>(null);
   console.log("ApplicationList received userRole:", userRole);
 
   const fetchApplications = async () => {
@@ -167,6 +171,7 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
               <TableCell>Status</TableCell>
               <TableCell>Submit Time</TableCell>
               {userRole === "staff" && <TableCell>Actions</TableCell>}
+              <TableCell>Messages</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -209,6 +214,15 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
                       </IconButton>
                     </TableCell>
                   )}
+                  <TableCell align="center">
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => setSelectedApplication(application)}
+                    >
+                      View Messages
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
@@ -249,6 +263,26 @@ export const ApplicationList = forwardRef(({ userRole }: Props, ref) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      {selectedApplication && (
+        <Box sx={{ mt: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Typography variant="h6">
+              Message Record for Application #{selectedApplication._id}
+            </Typography>
+            <Button size="small" onClick={() => setSelectedApplication(null)}>
+              Close Messages
+            </Button>
+          </Box>
+          <MessageSection applicationId={selectedApplication._id} />
+        </Box>
+      )}
     </Box>
   );
 });
